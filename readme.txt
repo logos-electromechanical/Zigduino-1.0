@@ -1,3 +1,6 @@
+This is a fork of the Arduino repository intended for use with the Zigduino
+Arduino variant (www.logos-electro.com/zigduino). 
+
 Arduino is an open-source physical computing platform based on a simple i/o
 board and a development environment that implements the Processing/Wiring
 language. Arduino can be used to develop stand-alone interactive objects or
