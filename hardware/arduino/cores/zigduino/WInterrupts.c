@@ -71,6 +71,14 @@ void attachInterrupt(uint8_t interruptNum, void (*userFunc)(void), int mode) {
 			EICRA = (EICRA & ~((1 << ISC10) | (1 << ISC11))) | (mode << ISC10);
 			EIMSK |= (1 << INT1);
 			break;
+		case 6: // INT2 (unconnected on Zigduino r1)
+			EICRA = (EICRA & ~((1 << ISC20) | (1 << ISC21))) | (mode << ISC20);
+			EIMSK |= (1 << INT2);
+			break;
+		case 7: // INT3 (unconnected on Zigduino r1)
+			EICRA = (EICRA & ~((1 << ISC30) | (1 << ISC31))) | (mode << ISC30);
+			EIMSK |= (1 << INT3);
+			break;
     }
   }
 }
