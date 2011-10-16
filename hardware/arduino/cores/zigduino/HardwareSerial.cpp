@@ -234,7 +234,7 @@ ISR(USART1_UDRE_vect)
 }
 #endif
 
-#ifdef USART2_UDRE_vect
+#if defined(USART2_UDRE_vect) && defined(UBRR2H)
 ISR(USART2_UDRE_vect)
 {
   if (tx_buffer2.head == tx_buffer2.tail) {
@@ -251,7 +251,7 @@ ISR(USART2_UDRE_vect)
 }
 #endif
 
-#ifdef USART3_UDRE_vect
+#if defined(USART3_UDRE_vect) && defined(UBRR3H)
 ISR(USART3_UDRE_vect)
 {
   if (tx_buffer3.head == tx_buffer3.tail) {
