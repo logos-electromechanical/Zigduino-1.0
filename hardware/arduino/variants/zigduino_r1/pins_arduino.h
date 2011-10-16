@@ -38,9 +38,9 @@
 #define digitalPinHasPWM(p)         ((p) == 3 ||(p) == 4 ||(p) == 6 ||(p) == 8 ||(p) == 9 ||(p) == 10 ||(p) == 11)
 
 /*const static uint8_t SS   = 10*/
-const static uint8_t MOSI = 20
-const static uint8_t MISO = 12
-const static uint8_t SCK  = 13
+const static uint8_t MOSI = 20;
+const static uint8_t MISO = 12;
+const static uint8_t SCK  = 13;
 
 const static uint8_t SDA = 21;
 const static uint8_t SCL = 22;
@@ -192,15 +192,15 @@ const uint8_t PROGMEM digital_pin_to_timer_PGM[] = {
 	NOT_ON_TIMER	, // PE 0 ** 0 ** USART0_RX	
 	NOT_ON_TIMER	, // PE 1 ** 1 ** USART0_TX	
 	NOT_ON_TIMER	, // PE 2 ** 2 ** D2
-	TIMER3C	, // PE 3 ** 3 ** PWM3
+	TIMER3C			, // PE 3 ** 3 ** PWM3
 	NOT_ON_TIMER	, // PE 4 ** 4 ** D4
-	TIMER3A	, // PE 6 ** 5 ** PWM5
-	TIMER3B	, // PE 5 ** 6 ** PWM6
+	TIMER3A			, // PE 6 ** 5 ** PWM5
+	TIMER3B			, // PE 5 ** 6 ** PWM6
 	NOT_ON_TIMER	, // PE 7 ** 7 ** D7
-	TIMER2A	, // PB 4 ** 8 ** PWM8
-	TIMER1C	, // PB 7 ** 9 ** PWM9
-	TIMER1B	, // PB 6 ** 10 ** PWM10
-	TIMER1A	, // PB 5 ** 11 ** PWM11
+	TIMER2A			, // PB 4 ** 8 ** PWM8
+	TIMER1C			, // PB 7 ** 9 ** PWM9
+	TIMER1B			, // PB 6 ** 10 ** PWM10
+	TIMER1A			, // PB 5 ** 11 ** PWM11
 	NOT_ON_TIMER	, // PB 3 ** 12 ** SPI_MISO
 	NOT_ON_TIMER	, // PB 1 ** 13 ** SPI_SCK
 	NOT_ON_TIMER	, // PF 0 ** 14 ** A0	
@@ -215,7 +215,6 @@ const uint8_t PROGMEM digital_pin_to_timer_PGM[] = {
 	NOT_ON_TIMER  	, // PD 5 ** 23 ** RFTX
 	NOT_ON_TIMER  	, // PD 6 ** 24 ** RFRX
 };	
-};
 
 #endif
 

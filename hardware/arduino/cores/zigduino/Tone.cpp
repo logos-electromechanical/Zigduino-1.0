@@ -98,7 +98,7 @@ static uint8_t tone_pins[AVAILABLE_TONE_PINS] = { 255 /*, 255, 255, 255, 255, 25
 #define AVAILABLE_TONE_PINS 6
 
 const uint8_t PROGMEM tone_pin_to_timer_PGM[] = { 5, 4, 0, 2, 1, 3 };
-static uint8_t tone_pins[AVAILABLE_TONE_PINS] = { 255, 255, 255, 255, 255, 255, 255 };
+static uint8_t tone_pins[AVAILABLE_TONE_PINS] = { 255, 255, 255, 255, 255, 255 };
 
 #elif defined(__AVR_ATmega8__)
 
