@@ -20,6 +20,7 @@ extern "C"{
 
 #define INPUT 0x0
 #define OUTPUT 0x1
+#define INPUT_PULLUP 0x2
 
 #define true 0x1
 #define false 0x0
@@ -40,7 +41,12 @@ extern "C"{
 #define FALLING 2
 #define RISING 3
 
-#if defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__)
+#if defined(__AVR_ATtiny24__) || defined(__AVR_ATtiny44__) || defined(__AVR_ATtiny84__) || defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
+#define DEFAULT 0
+#define EXTERNAL 1
+#define INTERNAL 2
+#else  
+#if defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__) || defined(__AVR_ATmega1284P__) 
 #define INTERNAL1V1 2
 #define INTERNAL2V56 3
 #else
@@ -48,6 +54,7 @@ extern "C"{
 #endif
 #define DEFAULT 1
 #define EXTERNAL 0
+#endif
 
 // undefine stdlib's abs if encountered
 #ifdef abs
@@ -67,8 +74,8 @@ extern "C"{
 #define noInterrupts() cli()
 
 #define clockCyclesPerMicrosecond() ( F_CPU / 1000000L )
-#define clockCyclesToMicroseconds(a) ( ((a) * 1000L) / (F_CPU / 1000L) )
-#define microsecondsToClockCycles(a) ( ((a) * (F_CPU / 1000L)) / 1000L )
+#define clockCyclesToMicroseconds(a) ( (a) / clockCyclesPerMicrosecond() )
+#define microsecondsToClockCycles(a) ( (a) * clockCyclesPerMicrosecond() )
 
 #define lowByte(w) ((uint8_t) ((w) & 0xff))
 #define highByte(w) ((uint8_t) ((w) >> 8))
@@ -142,6 +149,7 @@ extern const uint8_t PROGMEM digital_pin_to_timer_PGM[];
 #define NOT_A_PIN 0
 #define NOT_A_PORT 0
 
+#ifdef ARDUINO_MAIN
 #define PA 1
 #define PB 2
 #define PC 3
@@ -153,6 +161,7 @@ extern const uint8_t PROGMEM digital_pin_to_timer_PGM[];
 #define PJ 10
 #define PK 11
 #define PL 12
+#endif
 
 #define NOT_ON_TIMER 0
 #define TIMER0A 1

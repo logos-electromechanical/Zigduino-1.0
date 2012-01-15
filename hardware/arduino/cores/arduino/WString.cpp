@@ -500,7 +500,7 @@ int String::lastIndexOf( char theChar ) const
 
 int String::lastIndexOf(char ch, unsigned int fromIndex) const
 {
-	if (fromIndex >= len || fromIndex < 0) return -1;
+	if (fromIndex >= len) return -1;
 	char tempchar = buffer[fromIndex + 1];
 	buffer[fromIndex + 1] = '\0';
 	char* temp = strrchr( buffer, ch );
@@ -516,7 +516,7 @@ int String::lastIndexOf(const String &s2) const
 
 int String::lastIndexOf(const String &s2, unsigned int fromIndex) const
 {
-  	if (s2.len == 0 || len == 0 || s2.len > len || fromIndex < 0) return -1;
+  	if (s2.len == 0 || len == 0 || s2.len > len) return -1;
 	if (fromIndex >= len) fromIndex = len - 1;
 	int found = -1;
 	for (char *p = buffer; p <= buffer + fromIndex; p++) {
@@ -593,7 +593,7 @@ void String::replace(const String& find, const String& replace)
 		if (size == len) return;
 		if (size > capacity && !changeBuffer(size)) return; // XXX: tell user!
 		int index = len - 1;
-		while ((index = lastIndexOf(find, index)) >= 0) {
+		while (index >= 0 && (index = lastIndexOf(find, index)) >= 0) {
 			readFrom = buffer + index + find.len;
 			memmove(readFrom + diff, readFrom, len - (readFrom - buffer));
 			len += diff;
