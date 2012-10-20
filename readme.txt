@@ -1,5 +1,4 @@
-This is a fork of the Arduino repository intended for use with the Zigduino
-Arduino variant (http://www.logos-electro.com/zigduino-r2). 
+This is a fork of the Arduino repository intended for use with the Zigduino Arduino variant (http://www.logos-electro.com/zigduino-r2). Please note that this version is designed to work with Arduino-1.5.
 
 Arduino is an open-source physical computing platform based on a simple i/o
 board and a development environment that implements the Processing/Wiring
