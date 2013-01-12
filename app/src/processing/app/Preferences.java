@@ -23,15 +23,16 @@
 
 package processing.app;
 
+import processing.app.syntax.SyntaxStyle;
+import processing.core.PApplet;
+import processing.core.PConstants;
+
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
 
-import javax.swing.*;
-
-import processing.app.syntax.*;
-import processing.core.*;
 import static processing.app.I18n._;
 
 
@@ -70,15 +71,75 @@ public class Preferences {
 
   static final String PREFS_FILE = "preferences.txt";
 
-
-  // prompt text stuff
-
-  static final String PROMPT_YES     = _("Yes");
-  static final String PROMPT_NO      = _("No");
-  static final String PROMPT_CANCEL  = _("Cancel");
-  static final String PROMPT_OK      = _("OK");
-  static final String PROMPT_BROWSE  = _("Browse");
-
+  String[] languages = {
+                        _("System Default"),
+                        "العربية" + " (" + _("Arabic") + ")",
+                        "Aragonés" + " (" + _("Aragonese") + ")",
+                        "Català" + " (" + _("Catalan") + ")",
+                        "简体中文" + " (" + _("Chinese Simplified") + ")",
+                        "繁體中文" + " (" + _("Chinese Traditional") + ")",
+                        "Dansk" + " (" + _("Danish") + ")",
+                        "Nederlands" + " (" + _("Dutch") + ")",
+                        "English" + " (" + _("English") + ")",
+                        "Eesti" + " (" + _("Estonian") + ")",
+                        "Pilipino" + " (" + _("Filipino") + ")",
+                        "Français" + " (" + _("French") + ")",
+                        "Galego" + " (" + _("Galician") + ")",
+                        "Deutsch" + " (" + _("German") + ")",
+                        "ελληνικά" + " (" + _("Greek") + ")",
+                        "Magyar" + " (" + _("Hindi") + ")",
+                        "Magyar" + " (" + _("Hungarian") + ")",
+                        "Bahasa Indonesia" + " (" + _("Indonesian") + ")",
+                        "Italiano" + " (" + _("Italian") + ")",
+                        "日本語" + " (" + _("Japanese") + ")",
+                                                                "한국어" + " (" + _("Korean") + ")",
+                        "Latviešu" + " (" + _("Latvian") + ")",
+                        "Lietuvių Kalba" + " (" + _("Lithuaninan") + ")",
+                                                 "मराठी" + " (" + _("Marathi") + ")",                        
+                        "Norsk" + " (" + _("Norwegian") + ")",
+                        "فارسی" + " (" + _("Persian") + ")",
+                        "Język Polski" + " (" + _("Polish") + ")",
+                        "Português" + " (" + _("Portuguese") + " - Brazil)",
+                        "Português" + " (" + _("Portuguese") + " - Portugal)",
+                        "Română" + " (" + _("Romanian") + ")",
+                        "Русский" + " (" + _("Russian") + ")",
+                        "Español" + " (" + _("Spanish") + ")",
+                        "தமிழ்" + " (" + _("Tamil") + ")"};
+  String[] languagesISO = {
+                        "",
+                        "ar",
+                        "an",
+                        "ca",
+                        "zh_cn",
+                        "zh_tw",
+                        "da",
+                        "nl",
+                        "en",
+                        "et",
+                        "tl",
+                        "fr",
+                        "gl",
+                        "de",
+                        "el",
+                        "hi",
+                        "hu",
+                        "id",
+                        "it",
+                        "ja",
+                        "ko",
+                        "lv",
+                        "lt",
+                        "mr",
+                        "no_nb",
+                        "fa",
+                        "pl",
+                        "pt_br",
+                        "pt_pt",
+                        "ro",
+                        "ru",
+                        "es",
+                        "ta"};
+  
   /**
    * Standardized width for buttons. Mac OS X 10.3 wants 70 as its default,
    * Windows XP needs 66, and my Ubuntu machine needs 80+, so 80 seems proper.
@@ -116,6 +177,7 @@ public class Preferences {
   JCheckBox exportSeparateBox;
   JCheckBox verboseCompilationBox;
   JCheckBox verboseUploadBox;
+  JCheckBox verifyUploadBox;
   JCheckBox externalEditorBox;
   JCheckBox memoryOverrideBox;
   JTextField memoryField;
@@ -123,6 +185,7 @@ public class Preferences {
   JTextField fontSizeField;
   JCheckBox updateExtensionBox;
   JCheckBox autoAssociateBox;
+  JComboBox comboLanguage;
 
 
   // the calling editor, so updates can be applied
@@ -149,7 +212,7 @@ public class Preferences {
     }
 
     // check for platform-specific properties in the defaults
-    String platformExt = "." + PConstants.platformNames[PApplet.platform];
+    String platformExt = "." + Base.platform.getName();
     int platformExtLength = platformExt.length();
     Enumeration e = table.keys();
     while (e.hasMoreElements()) {
@@ -164,9 +227,6 @@ public class Preferences {
 
     // clone the hash table
     defaults = (Hashtable) table.clone();
-
-    // other things that have to be set explicitly for the defaults
-    setColor("run.window.bgcolor", SystemColor.control);
 
     // Load a prefs file if specified on the command line
     if (commandLinePrefs != null) {
@@ -204,7 +264,13 @@ public class Preferences {
 			 ), ex);
         }
       }
-    }    
+    }
+
+    // load the I18n module for internationalization
+    I18n.init(Preferences.get("editor.languages.current"));
+
+    // other things that have to be set explicitly for the defaults
+    setColor("run.window.bgcolor", SystemColor.control);
   }
 
 
@@ -243,7 +309,7 @@ public class Preferences {
     pain.add(sketchbookLocationField);
     d = sketchbookLocationField.getPreferredSize();
 
-    button = new JButton(PROMPT_BROWSE);
+    button = new JButton(I18n.PROMPT_BROWSE);
     button.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           File dflt = new File(sketchbookLocationField.getText());
@@ -269,9 +335,25 @@ public class Preferences {
     top += vmax + GUI_BETWEEN;
 
 
+    // Preferred language: [        ] (requires restart of Arduino)
+    Container box = Box.createHorizontalBox();
+    label = new JLabel(_("Editor language: "));
+    box.add(label);
+    comboLanguage = new JComboBox(languages);
+    comboLanguage.setSelectedIndex((Arrays.asList(languagesISO)).indexOf(Preferences.get("editor.languages.current")));
+    box.add(comboLanguage);
+    label = new JLabel(_("  (requires restart of Arduino)"));
+    box.add(label);
+    pain.add(box);
+    d = box.getPreferredSize();
+    box.setForeground(Color.gray);
+    box.setBounds(left, top, d.width, d.height);
+    right = Math.max(right, left + d.width);
+    top += d.height + GUI_BETWEEN;
+    
     // Editor font size [    ]
 
-    Container box = Box.createHorizontalBox();
+    box = Box.createHorizontalBox();
     label = new JLabel(_("Editor font size: "));
     box.add(label);
     fontSizeField = new JTextField(4);
@@ -299,8 +381,16 @@ public class Preferences {
     d = box.getPreferredSize();
     box.setBounds(left, top, d.width, d.height);
     top += d.height + GUI_BETWEEN;
-    
 
+    // [ ] Verify code after upload
+    
+    verifyUploadBox = new JCheckBox(_("Verify code after upload"));
+    pain.add(verifyUploadBox);
+    d = verifyUploadBox.getPreferredSize();
+    verifyUploadBox.setBounds(left, top, d.width + 10, d.height);
+    right = Math.max(right, left + d.width);
+    top += d.height + GUI_BETWEEN;
+    
     // [ ] Use external editor
 
     externalEditorBox = new JCheckBox(_("Use external editor"));
@@ -340,7 +430,6 @@ public class Preferences {
       right = Math.max(right, left + d.width);
       top += d.height + GUI_BETWEEN;
     }
-
 
     // More preferences are in the ...
 
@@ -384,7 +473,7 @@ public class Preferences {
 
     // [  OK  ] [ Cancel ]  maybe these should be next to the message?
 
-    button = new JButton(PROMPT_OK);
+    button = new JButton(I18n.PROMPT_OK);
     button.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           applyFrame();
@@ -399,7 +488,7 @@ public class Preferences {
     button.setBounds(h, top, BUTTON_WIDTH, BUTTON_HEIGHT);
     h += BUTTON_WIDTH + GUI_SMALL;
 
-    button = new JButton(PROMPT_CANCEL);
+    button = new JButton(I18n.PROMPT_CANCEL);
     button.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           disposeFrame();
@@ -482,7 +571,8 @@ public class Preferences {
     // put each of the settings into the table
     setBoolean("build.verbose", verboseCompilationBox.isSelected());
     setBoolean("upload.verbose", verboseUploadBox.isSelected());
-
+    setBoolean("upload.verify", verifyUploadBox.isSelected());
+    
 //    setBoolean("sketchbook.closing_last_window_quits",
 //               closingLastQuitsBox.isSelected());
     //setBoolean("sketchbook.prompt", sketchPromptBox.isSelected());
@@ -529,6 +619,11 @@ public class Preferences {
     
     setBoolean("editor.update_extension", updateExtensionBox.isSelected());
 
+    // adds the selected language to the preferences file
+    Object newItem = comboLanguage.getSelectedItem();
+    int pos = (Arrays.asList(languages)).indexOf(newItem.toString());  // position in the languages array
+    set("editor.languages.current",(Arrays.asList(languagesISO)).get(pos));        
+
     editor.applyPreferences();
   }
 
@@ -539,6 +634,7 @@ public class Preferences {
     // set all settings entry boxes to their actual status
     verboseCompilationBox.setSelected(getBoolean("build.verbose"));
     verboseUploadBox.setSelected(getBoolean("upload.verbose"));
+    verifyUploadBox.setSelected(getBoolean("upload.verify"));
 
     //closingLastQuitsBox.
     //  setSelected(getBoolean("sketchbook.closing_last_window_quits"));
@@ -573,8 +669,8 @@ public class Preferences {
     load(input, table);
   }
   
-  static public void load(InputStream input, Map table) throws IOException {  
-    String[] lines = PApplet.loadStrings(input);  // Reads as UTF-8
+  static public void load(InputStream input, Map table) throws IOException {
+    String[] lines = loadStrings(input);  // Reads as UTF-8
     for (String line : lines) {
       if ((line.length() == 0) ||
           (line.charAt(0) == '#')) continue;
@@ -588,6 +684,41 @@ public class Preferences {
       }
     }
   }
+
+  static public String[] loadStrings(InputStream input) {
+    try {
+      BufferedReader reader =
+              new BufferedReader(new InputStreamReader(input, "UTF-8"));
+
+      String lines[] = new String[100];
+      int lineCount = 0;
+      String line = null;
+      while ((line = reader.readLine()) != null) {
+        if (lineCount == lines.length) {
+          String temp[] = new String[lineCount << 1];
+          System.arraycopy(lines, 0, temp, 0, lineCount);
+          lines = temp;
+        }
+        lines[lineCount++] = line;
+      }
+      reader.close();
+
+      if (lineCount == lines.length) {
+        return lines;
+      }
+
+      // resize array to appropriate amount for these lines
+      String output[] = new String[lineCount];
+      System.arraycopy(lines, 0, output, 0, lineCount);
+      return output;
+
+    } catch (IOException e) {
+      e.printStackTrace();
+      //throw new RuntimeException("Error inside loadStrings()");
+    }
+    return null;
+  }
+
 
 
   // .................................................................
@@ -603,11 +734,10 @@ public class Preferences {
     // Fix for 0163 to properly use Unicode when writing preferences.txt
     PrintWriter writer = PApplet.createWriter(preferencesFile);
 
-    Enumeration e = table.keys(); //properties.propertyNames();
-    while (e.hasMoreElements()) {
-      String key = (String) e.nextElement();
+    String[] keys = (String[])table.keySet().toArray(new String[0]);
+    Arrays.sort(keys);
+    for (String key: keys)
       writer.println(key + "=" + ((String) table.get(key)));
-    }
 
     writer.flush();
     writer.close();

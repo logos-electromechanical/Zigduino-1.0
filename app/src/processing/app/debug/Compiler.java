@@ -38,7 +38,7 @@ import java.util.zip.*;
 
 public class Compiler implements MessageConsumer {
   static final String BUGS_URL =
-    _("http://code.google.com/p/arduino/issues/list");
+    _("http://github.com/arduino/Arduino/issues");
   static final String SUPER_BADNESS =
     I18n.format(_("Compiler error, please submit this code to {0}"), BUGS_URL);
 
@@ -46,6 +46,7 @@ public class Compiler implements MessageConsumer {
   String buildPath;
   String primaryClassName;
   boolean verbose;
+  boolean sketchIsCompiled;
 
   RunnerException exception;
 
@@ -68,6 +69,7 @@ public class Compiler implements MessageConsumer {
     this.buildPath = buildPath;
     this.primaryClassName = primaryClassName;
     this.verbose = verbose;
+    this.sketchIsCompiled = false;
 
     // the pms object isn't used for anything but storage
     MessageStream pms = new MessageStream(this);
@@ -130,6 +132,7 @@ public class Compiler implements MessageConsumer {
                findFilesInPath(buildPath, "c", false),
                findFilesInPath(buildPath, "cpp", false),
                boardPreferences));
+   sketchIsCompiled = true;
 
    // 2. compile the libraries, outputting .o files to: <buildPath>/<library>/
 
@@ -398,10 +401,8 @@ public class Compiler implements MessageConsumer {
     boolean compiling = true;
     while (compiling) {
       try {
-        if (in.thread != null)
-          in.thread.join();
-        if (err.thread != null)
-          err.thread.join();
+        in.join();
+        err.join();
         result = process.waitFor();
         //System.out.println("result is " + result);
         compiling = false;
@@ -488,7 +489,7 @@ public class Compiler implements MessageConsumer {
       if (pieces[3].trim().equals("'Udp' was not declared in this scope")) {
         error = _("The Udp class has been renamed EthernetUdp.");
         msg = _("\nAs of Arduino 1.0, the Udp class in the Ethernet library " +
-              "has been renamed to EthernetClient.\n\n");
+              "has been renamed to EthernetUdp.\n\n");
       }
       
       if (pieces[3].trim().equals("'class TwoWire' has no member named 'send'")) {
@@ -503,14 +504,30 @@ public class Compiler implements MessageConsumer {
               "to Wire.read() for consistency with other libraries.\n\n");
       }
 
-      RunnerException e = sketch.placeException(error, pieces[1], PApplet.parseInt(pieces[2]) - 1);
+      if (pieces[3].trim().equals("'Mouse' was not declared in this scope")) {
+        error = _("'Mouse' only supported on the Arduino Leonardo");
+        //msg = _("\nThe 'Mouse' class is only supported on the Arduino Leonardo.\n\n");
+      }
+      
+      if (pieces[3].trim().equals("'Keyboard' was not declared in this scope")) {
+        error = _("'Keyboard' only supported on the Arduino Leonardo");
+        //msg = _("\nThe 'Keyboard' class is only supported on the Arduino Leonardo.\n\n");
+      }
+      
+      RunnerException e = null;
+      if (!sketchIsCompiled) {
+        // Place errors when compiling the sketch, but never while compiling libraries
+        // or the core.  The user's sketch might contain the same filename!
+        e = sketch.placeException(error, pieces[1], PApplet.parseInt(pieces[2]) - 1);
+      }
 
       // replace full file path with the name of the sketch tab (unless we're
       // in verbose mode, in which case don't modify the compiler output)
       if (e != null && !verbose) {
         SketchCode code = sketch.getCode(e.getCodeIndex());
-        String fileName = code.isExtension(sketch.getDefaultExtension()) ? code.getPrettyName() : code.getFileName();
-        s = fileName + ":" + e.getCodeLine() + ": error: " + pieces[3] + msg;        
+        String fileName = (code.isExtension("ino") || code.isExtension("pde")) ? code.getPrettyName() : code.getFileName();
+        int lineNum = e.getCodeLine() + 1;
+        s = fileName + ":" + lineNum + ": error: " + pieces[3] + msg;        
       }
             
       if (exception == null && e != null) {
@@ -532,8 +549,10 @@ public class Compiler implements MessageConsumer {
       "-g", // include debugging info (so errors include line numbers)
       "-assembler-with-cpp",
       "-mmcu=" + boardPreferences.get("build.mcu"),
-      "-DF_CPU=" + boardPreferences.get("build.f_cpu"),
+      "-DF_CPU=" + boardPreferences.get("build.f_cpu"),      
       "-DARDUINO=" + Base.REVISION,
+      "-DUSB_VID=" + boardPreferences.get("build.vid"),
+      "-DUSB_PID=" + boardPreferences.get("build.pid"),
     }));
 
     for (int i = 0; i < includePaths.size(); i++) {
@@ -561,7 +580,9 @@ public class Compiler implements MessageConsumer {
       "-mmcu=" + boardPreferences.get("build.mcu"),
       "-DF_CPU=" + boardPreferences.get("build.f_cpu"),
       "-MMD", // output dependancy info
-      "-DARDUINO=" + Base.REVISION,
+      "-DUSB_VID=" + boardPreferences.get("build.vid"),
+      "-DUSB_PID=" + boardPreferences.get("build.pid"),
+      "-DARDUINO=" + Base.REVISION, 
     }));
 		
     for (int i = 0; i < includePaths.size(); i++) {
@@ -592,6 +613,8 @@ public class Compiler implements MessageConsumer {
       "-mmcu=" + boardPreferences.get("build.mcu"),
       "-DF_CPU=" + boardPreferences.get("build.f_cpu"),
       "-MMD", // output dependancy info
+      "-DUSB_VID=" + boardPreferences.get("build.vid"),
+      "-DUSB_PID=" + boardPreferences.get("build.pid"),      
       "-DARDUINO=" + Base.REVISION,
     }));
 
@@ -621,14 +644,18 @@ public class Compiler implements MessageConsumer {
    * not the header files in its sub-folders, as those should be included from
    * within the header files at the top-level).
    */
-  static public String[] headerListFromIncludePath(String path) {
+  static public String[] headerListFromIncludePath(String path) throws IOException {
     FilenameFilter onlyHFiles = new FilenameFilter() {
       public boolean accept(File dir, String name) {
         return name.endsWith(".h");
       }
     };
-    
-    return (new File(path)).list(onlyHFiles);
+
+    String[] list = (new File(path)).list(onlyHFiles);
+    if (list == null) {
+      throw new IOException();
+    }
+    return list;
   }
   
   static public ArrayList<File> findFilesInPath(String path, String extension,

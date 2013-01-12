@@ -42,9 +42,9 @@ import static processing.app.I18n._;
  * files and images, etc) that comes from that.
  */
 public class Base {
-  public static final int REVISION = 100;
+  public static final int REVISION = 103;
   /** This might be replaced by main() if there's a lib/version.txt file. */
-  static String VERSION_NAME = "0100";
+  static String VERSION_NAME = "0103";
   /** Set true if this a proper release rather than a numbered revision. */
   static public boolean RELEASE = false;
 
@@ -107,6 +107,11 @@ public class Base {
 
 
   static public void main(String args[]) {
+    initPlatform();
+
+    // run static initialization that grabs all the prefs
+    Preferences.init(null);
+
     try {
       File versionFile = getContentFile("lib/version.txt");
       if (versionFile.exists()) {
@@ -145,8 +150,6 @@ public class Base {
     }
     */
 
-    initPlatform();
-
 //    // Set the look and feel before opening the window
 //    try {
 //      platform.setLookAndFeel();
@@ -165,9 +168,6 @@ public class Base {
 
     // Make sure a full JDK is installed
     //initRequirements();
-
-    // run static initialization that grabs all the prefs
-    Preferences.init(null);
 
     // setup the theme coloring fun
     Theme.init();
@@ -1179,8 +1179,13 @@ public class Base {
     Arrays.sort(list, String.CASE_INSENSITIVE_ORDER);
 
     ActionListener listener = new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          activeEditor.getSketch().importLibrary(e.getActionCommand());
+        public void actionPerformed(ActionEvent event) {
+          String jarPath = event.getActionCommand();
+          try {
+            activeEditor.getSketch().importLibrary(jarPath);
+          } catch (IOException e) {
+            showWarning(_("Error"), I18n.format("Unable to list header files in {0}", jarPath), e);
+          }
         }
       };
 
@@ -1217,11 +1222,15 @@ public class Base {
 //        String packages[] =
 //          Compiler.packageListFromClassPath(libraryClassPath);
         libraries.add(subfolder);
+      try {
         String packages[] =
           Compiler.headerListFromIncludePath(subfolder.getAbsolutePath());
         for (String pkg : packages) {
           importToLibraryTable.put(pkg, subfolder);
         }
+      } catch (IOException e) {
+        showWarning(_("Error"), I18n.format("Unable to list header files in {0}", subfolder), e);
+      }
 
         JMenuItem item = new JMenuItem(libraryName);
         item.addActionListener(listener);
@@ -1534,12 +1543,12 @@ public class Base {
   
   
   static public String getAvrBasePath() {
-    if(Base.isLinux()) {
-      return ""; // avr tools are installed system-wide and in the path
-    } else {
-      return getHardwarePath() + File.separator + "tools" +
-             File.separator + "avr" + File.separator + "bin" + File.separator;
-    }  
+    String path = getHardwarePath() + File.separator + "tools" +
+                  File.separator + "avr" + File.separator + "bin" + File.separator;
+    if (Base.isLinux() && !(new File(path)).exists()) {
+      return "";  // use distribution provided avr tools if bundled tools missing
+    }
+    return path;
   }
   
   
@@ -1565,7 +1574,19 @@ public class Base {
 
 
   static public File getSketchbookLibrariesFolder() {
-    return new File(getSketchbookFolder(), "libraries");
+    File libdir = new File(getSketchbookFolder(), "libraries");
+    if (!libdir.exists()) {
+      try {
+        libdir.mkdirs();
+        File readme = new File(libdir, "readme.txt");
+        FileWriter freadme = new FileWriter(readme);
+        freadme.write(_("For information on installing libraries, see: " +
+                        "http://arduino.cc/en/Guide/Libraries\n"));
+        freadme.close();
+      } catch (Exception e) {
+      }
+    }
+    return libdir;
   }
 
 

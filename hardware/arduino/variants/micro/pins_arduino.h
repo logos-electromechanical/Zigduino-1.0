@@ -23,5 +23,15 @@
 */
 
 #include "../leonardo/pins_arduino.h"
-#undef ARDUINO_MODEL_USB_PID
-#define ARDUINO_MODEL_USB_PID	0x0035
+
+#undef TXLED0
+#undef TXLED1
+#undef RXLED0
+#undef RXLED1
+#undef TX_RX_LED_INIT
+
+#define TXLED0			PORTD &= ~(1<<5)
+#define TXLED1			PORTD |= (1<<5)
+#define RXLED0			PORTB &= ~(1<<0)
+#define RXLED1			PORTB |= (1<<0)
+#define TX_RX_LED_INIT	DDRD |= (1<<5), DDRB |= (1<<0), TXLED0, RXLED0

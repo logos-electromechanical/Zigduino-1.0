@@ -1,3 +1,255 @@
+
+[core]
+
+* Fixed malloc bug (Paul Stoffregen)
+
+[libraries]
+
+* Fixed memory leak when calling Ethernet.begin() multiple times.
+* Fixed SD example listfiles.ino
+* Fixed a lot of Esplora examples
+
+[environment]
+
+* Sort entries in preferences.txt (Shigeru Kanemoto)
+* Fixed some wrong translations
+* Fixed NPE due to permissions IO error
+
+ARDUINO 1.0.3 - 2012.12.10
+
+[hardware]
+
+* Added support for the Arduino Esplora
+
+[environment]
+
+* Signed application for MacOSX 10.8
+
+[core]
+
+* Fixed power-up-starts-bootloader in Leonardo (and derivative) 
+  bootloaders. (Kristian Lauszus)
+  (https://github.com/arduino/Arduino/pull/118)
+
+* Fixed digital_pin_to_timer_PGM array in Leonardo variant.
+
+* Published updated Wifi firmware
+
+* Updated source code for atmega8 bootloader
+
+[libraries]
+
+* Added 600 baud support in SoftwareSerial (Sébastien Jean)
+  (http://github.com/arduino/Arduino/issues/1146)
+
+ARDUINO 1.0.2 - 2012.11.05
+
+[hardware]
+
+* Added support for the Arduino Micro.
+
+* Added support for the LilyPad Arduino USB.
+
+* For Arduino Mega, having avrdude use "wiring" not "stk500v2" for
+  uploads (to improve auto-reset behavior). 
+  http://code.google.com/p/arduino/issues/detail?id=806
+
+[environment]
+
+* Find-In-Reference now works whether or not text is selected.
+  http://code.google.com/p/arduino/issues/detail?id=940
+
+* Not generating prototypes for functions that already have them.
+  (Lars J. Nielsen).
+  http://code.google.com/p/arduino/issues/detail?id=973
+
+* Improved line numbers for error messages. (Paul Stoffregen)
+  http://code.google.com/p/arduino/issues/detail?id=907
+
+* Automatically create libraries folder in the sketchbook.
+  (Paul Stoffregen)
+  http://code.google.com/p/arduino/issues/detail?id=986
+
+* Tutorial on installing libraries (linked from readme.txt in the
+  libraries folder). (Limor Fried)
+
+* Fix to allow selection of Norwegian. (Rune Fauske)
+
+* Fix to race condition / occasional error in compilation. (gandrewstone)
+  http://code.google.com/p/arduino/issues/detail?id=950
+
+* Don't break long C++ comments during auto-format.
+  http://code.google.com/p/arduino/issues/detail?id=255
+
+[core / libraries]
+
+* Included WiFi library and wifi shield firmware.
+
+* Added ability to specify serial configuration (data bits, stop bits
+  and parity check) in Serial.begin(). (Alarus)
+  http://code.google.com/p/arduino/issues/detail?id=770
+
+* Avoided overruns of the incoming serial (CDC) buffer on the Leonardo.
+  (Peter Van Hoyweghen)
+
+* Avoided auto-reset of the Leonardo when opening serial port after
+  upload without specifying a baud rate. (Peter Van Hoyweghen)
+
+* Fix for tone() on the Leonardo. (Shigeru Kanemoto)
+  http://code.google.com/p/arduino/issues/detail?id=960
+
+* Fix for SD library on Leonardo.
+  http://code.google.com/p/arduino/issues/detail?id=931
+
+* Added other write functions on Leonardo.
+  http://code.google.com/p/arduino/issues/detail?id=958
+
+* Added support for Leonardo interrupts 2 and 3. (Kristian Lauszus)
+
+* Print ovf, inf, or nan accordingly in Serial.print(). (Nick Gammon)
+  http://code.google.com/p/arduino/issues/detail?id=946
+  http://code.google.com/p/arduino/issues/detail?id=961
+  http://code.google.com/p/arduino/issues/detail?id=967
+
+* Fix initialization of SPI data lines. (gandrewstone)
+  http://code.google.com/p/arduino/issues/detail?id=888
+
+* Serial.flush() waits for last byte to transmit. (michele.mazzucchi)
+  http://code.google.com/p/arduino/issues/detail?id=871
+
+* Adding overloads so Serial.write(0) works.
+  http://code.google.com/p/arduino/issues/detail?id=1006
+
+[build]
+
+* Fix Linux arduino script when there are spaces in directory name.
+
+* Pass Linux command line arguments from arduino script through to the
+  Java code. (Allows specifying sketch to open on command line.)
+
+[examples]
+
+* Included examples for the starter kit.
+
+ARDUINO 1.0.1 - 2012.05.21
+
+[environment]
+
+* The IDE has been internationalized and translated into multiple languages.
+  Thanks to Shigeru Kanemoto for the internationalization and Japanese
+  translation and many others for the other translations.  For more
+  information, see: http://arduino.cc/playground/Main/LanguagesIDE
+
+* Added preference for selecting the language in which to display the
+  Arduino software.  Defaults to the operating system locale.  
+
+* New upload process for the Arduino Leonardo (ATmega32U4).
+
+* The editor font size preference now applies to the serial monitor and
+  error / message console as well as the editor.  (Paul Stoffregen)
+  http://code.google.com/p/arduino/issues/detail?id=550
+
+* Compilation has been speeded up by only compiling changed files.  (All
+  files are recompiled when a new board is selected.)  (Paul Stoffregen)
+  http://code.google.com/p/arduino/issues/detail?id=638
+
+* Console log files (stdout.txt and stderr.txt) are now removed when the
+  Arduino software exits.  (Paul Stoffregen)
+
+* The minimum size for the Arduino software window has been reduced.
+  http://code.google.com/p/arduino/issues/detail?id=52
+
+* Improvements to the Find / Replace dialog.  (Peter Lewis)
+  http://code.google.com/p/arduino/issues/detail?id=825
+
+* Support for selecting words (on double-click) and lines (triple-click)
+  in the Arduino software.  (Peter Lewis)
+  http://code.google.com/p/arduino/issues/detail?id=824
+
+* Don't insert newline when using serial monitor keyboard
+  shortcut. (Lars J. Nielsen)
+  http://code.google.com/p/arduino/issues/detail?id=279
+
+* Added a preference for disabling verification on upload (for increased
+  speed).  (Nathan Seidle)
+  http://code.google.com/p/arduino/issues/detail?id=842
+
+* Added the gcc toolchain to the Linux distribution.  (To use the 
+  toolchain already installed on your system, simply delete the one
+  that comes with the Arduino software.)  (Paul Stoffregen)
+  http://code.google.com/p/arduino/issues/detail?id=300
+
+* Updating Arduino Mini upload protocol to 'arduino' from 'stk500' (should
+  fix problems with auto-reset not working).
+
+[core / libraries]
+
+* Updated (and official) support for the Arduino Leonardo (ATmega32U4).
+  Includes new bootloader and various fixes to the core.  
+
+* Adding overloads to Wire.write() (for Wire.write(0)). (Paul Stoffregen)
+  http://code.google.com/p/arduino/issues/detail?id=527
+
+* Fixing delayMicroseconds() for 20 MHz clocks (Erdem U. Altinyurt)
+  http://code.google.com/p/arduino/issues/detail?id=306
+
+* Support third external interrupt on ATmega1284P. (maniacbug)
+  http://code.google.com/p/arduino/issues/detail?id=728
+
+* Update reference voltage constants for ATmega1284P. (maniacbug)
+  http://code.google.com/p/arduino/issues/detail?id=728
+
+* Adding --relax linker flag for ATmega2560. (arducopter)
+  http://code.google.com/p/arduino/issues/detail?id=729
+
+* Fixing Ethernet library bug on avr-gcc 4.5.1 (SurferTim)
+  http://code.google.com/p/arduino/issues/detail?id=605
+
+* Fixed DHCP hostname generation. (peter)
+
+* Simplifying microseconds to clock cycles conversions (Rob Tillaart)
+  http://code.google.com/p/arduino/issues/detail?id=675
+
+* Fixed various warnings.  (maniacbug)
+  http://code.google.com/p/arduino/issues/detail?id=688
+
+* Fixed bug w/ repeated initial characters in findUntil().  (Jeffery.zksun)
+  http://code.google.com/p/arduino/issues/detail?id=768
+
+* Added INPUT_PULLUP option for pinMode().  The INPUT mode now explicitly
+  disables the pullup resistors.  (Paul Stoffregen)
+  http://code.google.com/p/arduino/issues/detail?id=246
+
+* Fixing bug in the receiving of multiple UDP packets.  (dylan and peter)
+  http://code.google.com/p/arduino/issues/detail?id=669
+
+* Added ability to generate repeated starts in the Wire library (in
+  master mode).  Extra boolean parameters to endTransmission() and
+  requestFrom() control whether or not to send a stop (or a repeated
+  start instead).  (Todd Krein)
+  http://code.google.com/p/arduino/issues/detail?id=663
+
+* Added Ethernet.maintain() to renew DHCP leases.  (Peter Magnusson)
+  http://code.google.com/p/arduino/issues/detail?id=716
+
+* Fix for CLOSE_WAIT bug that could cause Ethernet sketches to crash
+  over time.  (mr-russ and Johann Richard)
+
+* Fix to servo pulse timing calculation. (jwatte)
+  http://code.google.com/p/arduino/issues/detail?id=908
+
+* Added readString() and readStringUntil() functions.  (Adrian McEwen)
+  http://code.google.com/p/arduino/issues/detail?id=454
+
+[examples]
+
+* Updated to latest ArduinoISP sketch. (rsbohn)
+  http://code.google.com/p/arduino/issues/detail?id=378
+
+* Fixed ArduinoISP sketch by lowering delay() in heartbeat.
+
+* Other updates.
+
 ARDUINO 1.0 - 2011.11.30
 
 [environment]

@@ -264,7 +264,9 @@ public class Editor extends JFrame implements RunnerListener {
       splitPane.setDividerSize(dividerSize);
     }
 
-    splitPane.setMinimumSize(new Dimension(600, 400));
+    // the following changed from 600, 400 for netbooks
+    // http://code.google.com/p/arduino/issues/detail?id=52
+    splitPane.setMinimumSize(new Dimension(600, 100));
     box.add(splitPane);
 
     // hopefully these are no longer needed w/ swing
@@ -288,19 +290,9 @@ public class Editor extends JFrame implements RunnerListener {
     setPlacement(location);
 
 
-    // If the window is resized too small this will resize it again to the
-    // minimums. Adapted by Chris Lonnen from comments here:
-    // http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4320050
-    // as a fix for http://dev.processing.org/bugs/show_bug.cgi?id=25
-    final int minW = Preferences.getInteger("editor.window.width.min");
-    final int minH = Preferences.getInteger("editor.window.height.min");
-    addComponentListener(new java.awt.event.ComponentAdapter() {
-        public void componentResized(ComponentEvent event) {
-          setSize((getWidth() < minW) ? minW : getWidth(),
-                  (getHeight() < minH) ? minH : getHeight());
-        }
-      });
-
+    // Set the minimum size for the editor window
+    setMinimumSize(new Dimension(Preferences.getInteger("editor.window.width.min"),
+                                 Preferences.getInteger("editor.window.height.min")));
 //    System.out.println("t3");
 
     // Bring back the general options for the editor
@@ -1081,9 +1073,10 @@ public class Editor extends JFrame implements RunnerListener {
     item = newJMenuItemShift(_("Find in Reference"), 'F');
     item.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          if (textarea.isSelectionActive()) {
-            handleFindReference();
-          }
+//          if (textarea.isSelectionActive()) {
+//            handleFindReference();
+//          }
+        	handleFindReference();
         }
       });
     menu.add(item);
@@ -1128,7 +1121,11 @@ public class Editor extends JFrame implements RunnerListener {
     undoItem.addActionListener(undoAction = new UndoAction());
     menu.add(undoItem);
 
-    redoItem = newJMenuItem(_("Redo"), 'Y');
+    if (!Base.isMacOS()) {
+        redoItem = newJMenuItem(_("Redo"), 'Y');
+    } else {
+        redoItem = newJMenuItemShift(_("Redo"), 'Z');
+    }
     redoItem.addActionListener(redoAction = new RedoAction());
     menu.add(redoItem);
 
@@ -1240,10 +1237,29 @@ public class Editor extends JFrame implements RunnerListener {
     item.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           if (find != null) {
-            //find.find(true);
-            //FindReplace find = new FindReplace(Editor.this); //.show();
-            find.find(true);
+            find.findNext();
           }
+        }
+      });
+    menu.add(item);
+
+    item = newJMenuItemShift(_("Find Previous"), 'G');
+    item.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          if (find != null) {
+            find.findPrevious();
+          }
+        }
+      });
+    menu.add(item);
+
+    item = newJMenuItem(_("Use Selection For Find"), 'E');
+    item.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          if (find == null) {
+            find = new FindReplace(Editor.this);
+          }
+          find.setFindText( getSelectedText() );
         }
       });
     menu.add(item);
@@ -1793,25 +1809,58 @@ public class Editor extends JFrame implements RunnerListener {
     stopCompoundEdit();
   }
 
+	protected String getCurrentKeyword() {
+		String text = "";
+		if (textarea.getSelectedText() != null)
+			text = textarea.getSelectedText().trim();
 
-  protected void handleFindReference() {
-    String text = textarea.getSelectedText().trim();
+		try {
+			int current = textarea.getCaretPosition();
+			int startOffset = 0;
+			int endIndex = current;
+			String tmp = textarea.getDocument().getText(current, 1);
+			// TODO probably a regexp that matches Arduino lang special chars
+			// already exists.
+			String regexp = "[\\s\\n();\\\\.!='\\[\\]{}]";
 
-    if (text.length() == 0) {
-      statusNotice(_("First select a word to find in the reference."));
+			while (!tmp.matches(regexp)) {
+				endIndex++;
+				tmp = textarea.getDocument().getText(endIndex, 1);
+			}
+			// For some reason document index start at 2.
+			// if( current - start < 2 ) return;
 
-    } else {
-      String referenceFile = PdeKeywords.getReference(text);
-      //System.out.println("reference file is " + referenceFile);
-      if (referenceFile == null) {
-        statusNotice(
-	  I18n.format(_("No reference available for \"{0}\""), text)
-	);
-      } else {
-        Base.showReference(I18n.format(_("{0}.html"), referenceFile));
-      }
-    }
-  }
+			tmp = "";
+			while (!tmp.matches(regexp)) {
+				startOffset++;
+				if (current - startOffset < 0) {
+					tmp = textarea.getDocument().getText(0, 1);
+					break;
+				} else
+					tmp = textarea.getDocument().getText(current - startOffset, 1);
+			}
+			startOffset--;
+
+			int length = endIndex - current + startOffset;
+			text = textarea.getDocument().getText(current - startOffset, length);
+			
+		} catch (BadLocationException bl) {
+			bl.printStackTrace();
+		} finally {
+			return text;
+		}
+	}
+
+	protected void handleFindReference() {
+		String text = getCurrentKeyword();
+		
+		String referenceFile = PdeKeywords.getReference(text);
+		if (referenceFile == null) {
+			statusNotice(I18n.format(_("No reference available for \"{0}\""), text));
+		} else {
+			Base.showReference(I18n.format(_("{0}.html"), referenceFile));
+		}
+	}
 
 
   // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
@@ -2738,16 +2787,15 @@ public class Editor extends JFrame implements RunnerListener {
         copyItem.setEnabled(true);
         discourseItem.setEnabled(true);
 
-        String sel = textarea.getSelectedText().trim();
-        referenceFile = PdeKeywords.getReference(sel);
-        referenceItem.setEnabled(referenceFile != null);
-
       } else {
         cutItem.setEnabled(false);
         copyItem.setEnabled(false);
         discourseItem.setEnabled(false);
-        referenceItem.setEnabled(false);
       }
+      
+      referenceFile = PdeKeywords.getReference(getCurrentKeyword());
+      referenceItem.setEnabled(referenceFile != null);
+      
       super.show(component, x, y);
     }
   }

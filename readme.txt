@@ -13,7 +13,7 @@ For more information, see the website at: http://www.arduino.cc/
 or the forums at: http://arduino.cc/forum/
 
 To report a bug in the software, go to:
-http://code.google.com/p/arduino/issues/list
+http://github.com/arduino/Arduino/issues
 
 For other suggestions, use the forum:
 http://arduino.cc/forum/index.php/board,21.0.html
@@ -27,7 +27,7 @@ CREDITS
 Arduino is an open source project, supported by many.
 
 The Arduino team is composed of Massimo Banzi, David Cuartielles, Tom Igoe,
-Gianluca Martino, and David A. Mellis.
+Gianluca Martino, Daniela Antonietti, and David A. Mellis.
 
 Arduino uses the GNU avr-gcc toolchain, avrdude, avr-libc, and code from
 Processing and Wiring.
