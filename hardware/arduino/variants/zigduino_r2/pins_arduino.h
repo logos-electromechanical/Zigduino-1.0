@@ -32,10 +32,12 @@
 
 #include <avr/pgmspace.h>
 
-#define NUM_DIGITAL_PINS            25
-#define NUM_ANALOG_INPUTS           6
-#define analogInputToDigitalPin(p)  ((p < 6) ? (p) + 14 : -1)
-#define digitalPinHasPWM(p)         ((p) == 3 ||(p) == 4 ||(p) == 6 ||(p) == 8 ||(p) == 9 ||(p) == 10 ||(p) == 11)
+#define NUM_DIGITAL_PINS            30
+#define NUM_ANALOG_INPUTS           8
+#define analogInputToDigitalPin(p)  (((p) < 6) ? (p) + 14 : \
+				      ((p) == 6) ? 33 : \
+				      ((p) == 7) ? 35 :-1)
+#define digitalPinHasPWM(p)         ((p) == 3 ||(p) == 4 ||(p) == 6 ||(p) == 8 ||(p) == 9 ||(p) == 10 ||(p) == 11 ||(p) == 27)
 
 /*const static uint8_t SS   = 10*/
 const static uint8_t MOSI = 20;
@@ -52,29 +54,37 @@ const static uint8_t A2 = 16;
 const static uint8_t A3 = 17;
 const static uint8_t A4 = 18;
 const static uint8_t A5 = 19;
+const static uint8_t A6 = 33;
+const static uint8_t A7 = 35;
+
+const static uint8_t RFTX = 23;
+const static uint8_t RFRX = 24;
+const static uint8_t BATMON = 35;
 
 // A majority of the pins are NOT PCINTs, SO BE WARNED (i.e. you cannot use them as receive pins)
 // Only pins available for RECEIVE (TRANSMIT can be on any pin):
 // Pins: 7, 8, 9, 10, 11, 12, 13, 20
 
-#define digitalPinToPCICR(p)    ( (((p) >= 7) && ((p) <= 13)) || \
-                                  ((p) == 20) ? (&PCICR) : ((uint8_t *)0) )
+#define digitalPinToPCICR(p)    ( ((((p) >= 8) && ((p) <= 13)) || \
+                                  ((p) == 20) || ((p) == 36) || ((p) == 26)) ? \
+                                  (&PCICR) : ((uint8_t *)0) )
 
-#define digitalPinToPCICRbit(p) ( ((p) == 7) ? 1 : 0 ) 
+#define digitalPinToPCICRbit(p) ( ((p) == 36) ? 1 : 0 ) 
 
-#define digitalPinToPCMSK(p)    ( ((((p) >= 8) && ((p) <= 13)) || ((p) == 20)) ? (&PCMSK0) : \
-                                ( ((p) == 7) ? (&PCMSK1) : \
+#define digitalPinToPCMSK(p)    ( ((((p) >= 8) && ((p) <= 13)) || ((p) == 20) || ((p) == 26)) ? (&PCMSK0) : \
+                                ( ((p) == 36) ? (&PCMSK1) : \
                                 ((uint8_t *)0) ) )
 
-#define digitalPinToPCMSKbit(p) ( ((p) == 7) ? 0 : \
-                                ( ((p) == 8) ? 4 : \
+#define digitalPinToPCMSKbit(p) ( ((p) == 8) ? 4 : \
                                 ( ((p) == 9) ? 7 : \
                                 ( ((p) == 10) ? 6 : \
                                 ( ((p) == 11) ? 5 : \
                                 ( ((p) == 12) ? 3 : \
                                 ( ((p) == 13) ? 1 : \
                                 ( ((p) == 20) ? 2 : \
-                                0 ) ) ) ) ) )
+                                ( ((p) == 26) ? 0 : \
+                                ( ((p) == 36) ? 0 : \
+                                0 ) ) ) ) ) ) ) ) 
 
 #ifdef ARDUINO_MAIN
 
@@ -104,6 +114,7 @@ const uint16_t PROGMEM port_to_output_PGM[] = {
 	(uint16_t)&PORTF,
 	(uint16_t)&PORTG,
 	NOT_A_PORT,
+#ifdef ARDUINO_MAIN
 	NOT_A_PORT,
 	NOT_A_PORT,
 	NOT_A_PORT,
@@ -129,8 +140,8 @@ const uint16_t PROGMEM port_to_input_PGM[] = {
 const uint8_t PROGMEM digital_pin_to_port_PGM[] = {
 	// PORTLIST		
 	// -------------------------------------------		
-	PE	, // PE 0 ** 0 ** USART0_RX	
-	PE	, // PE 1 ** 1 ** USART0_TX	
+	PD	, // PD 2 ** 0 ** USART1_RX	
+	PD	, // PD 3 ** 1 ** USART1_TX	
 	PE	, // PE 6 ** 2 ** D2
 	PE	, // PE 5 ** 3 ** PWM3
 	PE	, // PE 2 ** 4 ** PWM4
@@ -152,15 +163,29 @@ const uint8_t PROGMEM digital_pin_to_port_PGM[] = {
 	PB	, // PB 2 ** 20 ** SPI_MOSI
 	PD	, // PD 0 ** 21 ** I2C_SCL
 	PD	, // PD 1 ** 22 ** I2C_SDA
-	PD  , // PD 5 ** 23 ** RFTX
-	PD  , // PD 6 ** 24 ** RFRX
+	PD  	, // PD 5 ** 23 ** RFTX (PIN 1 of AUX)
+	PD  	, // PD 6 ** 24 ** RFRX (PIN 2 of AUX)
+	PD	, // PD 7 ** 25 ** PIN 3 of AUX
+	PB 	, // PB 0 ** 26 ** PIN 4 of AUX
+	PG	, // PG 5 ** 27 ** PIN 5 of AUX
+	PD	, // PD 4 ** 28 ** PIN 6 of AUX
+	PG	, // PG 3 ** 29 ** TOSC2 (PIN 7 of AUX)
+	PG	, // PG 4 ** 30 ** TOSC1 (PIN 8 of AUX)
+	PG	, // PG 1 ** 31 ** PIN 9 of AUX
+	PG	, // PG 2 ** 32 ** PIN 10 of AUX
+	PF	, // PF 6 ** 33 ** A6 (PIN 11 of AUX)
+	PG	, // PG 0 ** 34 ** PIN 12 of AUX
+	PF 	, // PF 7 ** 35 ** A7/BATMON (PIN 13 of AUX)
+	PE	, // PE 0 ** 36 ** USART0_RX
+	PE	, // PE 1 ** 37 ** USART0_TX
+	
 };
 
 const uint8_t PROGMEM digital_pin_to_bit_mask_PGM[] = {
 	// PIN IN PORT		
 	// -------------------------------------------		
-	_BV( 0 )	, // PE 0 ** 0 ** USART0_RX	
-	_BV( 1 )	, // PE 1 ** 1 ** USART0_TX	
+	_BV( 2 )	, // PD 0 ** 0 ** USART1_RX	
+	_BV( 3 )	, // PE 1 ** 1 ** USART1_TX	
 	_BV( 6 )	, // PE 6 ** 2 ** D2
 	_BV( 5 )	, // PE 5 ** 3 ** PWM3
 	_BV( 2 )	, // PE 2 ** 4 ** PWM4
@@ -182,8 +207,22 @@ const uint8_t PROGMEM digital_pin_to_bit_mask_PGM[] = {
 	_BV( 2 )	, // PB 2 ** 20 ** SPI_MOSI
 	_BV( 0 )	, // PD 0 ** 21 ** I2C_SCL
 	_BV( 1 )	, // PD 1 ** 22 ** I2C_SDA	
-	_BV( 5 )  	, // PD 5 ** 23 ** RFTX
-	_BV( 6 )  	, // PD 6 ** 24 ** RFRX
+	_BV( 5 )  	, // PD 5 ** 23 ** RFTX (PIN 1 of AUX)
+	_BV( 6 )  	, // PD 6 ** 24 ** RFRX (PIN 2 of AUX)
+	_BV( 7 )	, // PD 7 ** 25 ** PIN 3 of AUX
+	_BV( 0 ) 	, // PB 0 ** 26 ** PIN 4 of AUX
+	_BV( 5 )	, // PG 5 ** 27 ** PIN 5 of AUX
+	_BV( 4 )	, // PD 4 ** 28 ** PIN 6 of AUX
+	_BV( 3 )	, // PG 3 ** 29 ** TOSC2 (PIN 7 of AUX)
+	_BV( 4 )	, // PG 4 ** 30 ** TOSC1 (PIN 8 of AUX)
+	_BV( 1 )	, // PG 1 ** 31 ** PIN 9 of AUX
+	_BV( 2 )	, // PG 2 ** 32 ** PIN 10 of AUX
+	_BV( 6 )	, // PF 6 ** 33 ** A6 (PIN 11 of AUX)
+	_BV( 0 )	, // PG 0 ** 34 ** PIN 12 of AUX
+	_BV( 7 ) 	, // PF 7 ** 35 ** A7/BATMON (PIN 13 of AUX)
+	_BV( 0 )	, // PE 0 ** 36 ** USART0_RX
+	_BV( 1 )	, // PE 1 ** 37 ** USART0_TX
+	
 };
 
 const uint8_t PROGMEM digital_pin_to_timer_PGM[] = {
@@ -212,8 +251,21 @@ const uint8_t PROGMEM digital_pin_to_timer_PGM[] = {
 	NOT_ON_TIMER	, // PB 2 ** 20 ** SPI_MOSI
 	NOT_ON_TIMER	, // PD 0 ** 21 ** I2C_SCL
 	NOT_ON_TIMER	, // PD 1 ** 22 ** I2C_SDA	
-	NOT_ON_TIMER  	, // PD 5 ** 23 ** RFTX
-	NOT_ON_TIMER  	, // PD 6 ** 24 ** RFRX
+	NOT_ON_TIMER  	, // PD 5 ** 23 ** RFTX (PIN 1 of AUX)
+	NOT_ON_TIMER  	, // PD 6 ** 24 ** RFRX (PIN 2 of AUX)
+	NOT_ON_TIMER	, // PD 7 ** 25 ** PIN 3 of AUX
+	NOT_ON_TIMER 	, // PB 0 ** 26 ** PIN 4 of AUX
+	TIMER0B		, // PG 5 ** 27 ** PIN 5 of AUX
+	NOT_ON_TIMER	, // PD 4 ** 28 ** PIN 6 of AUX
+	NOT_ON_TIMER	, // PG 3 ** 29 ** TOSC2 (PIN 7 of AUX)
+	NOT_ON_TIMER	, // PG 4 ** 30 ** TOSC1 (PIN 8 of AUX)
+	NOT_ON_TIMER	, // PG 1 ** 31 ** PIN 9 of AUX
+	NOT_ON_TIMER	, // PG 2 ** 32 ** PIN 10 of AUX
+	NOT_ON_TIMER	, // PF 6 ** 33 ** A6 (PIN 11 of AUX)
+	NOT_ON_TIMER	, // PG 0 ** 34 ** PIN 12 of AUX
+	NOT_ON_TIMER 	, // PF 7 ** 35 ** A7/BATMON (PIN 13 of AUX)
+	NOT_ON_TIMER	, // PE 0 ** 36 ** USART0_RX
+	NOT_ON_TIMER	, // PE 1 ** 37 ** USART0_TX
 };	
 
 #endif
