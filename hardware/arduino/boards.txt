@@ -454,24 +454,24 @@ atmega8.build.variant=standard
 
 ##############################################################
 
-zigduino.name=Zigduino_r1
+zigduino_r1.name=Zigduino_r1
 
-zigduino.upload.protocol=arduino
-zigduino.upload.maximum_size=126976
-zigduino.upload.speed=57600
+zigduino_r1.upload.protocol=arduino
+zigduino_r1.upload.maximum_size=126976
+zigduino_r1.upload.speed=57600
 
-zigduino.bootloader.low_fuses=0xFF
-zigduino.bootloader.high_fuses=0xDA
-zigduino.bootloader.extended_fuses=0xF5
-zigduino.bootloader.path=atmega
-zigduino.bootloader.file=ATmegaBOOT_168_atmega128rfa1.hex
-zigduino.bootloader.unlock_bits=0x3F
-zigduino.bootloader.lock_bits=0x0F
+zigduino_r1.bootloader.low_fuses=0xFF
+zigduino_r1.bootloader.high_fuses=0xDA
+zigduino_r1.bootloader.extended_fuses=0xF5
+zigduino_r1.bootloader.path=atmega
+zigduino_r1.bootloader.file=ATmegaBOOT_168_atmega128rfa1.hex
+zigduino_r1.bootloader.unlock_bits=0x3F
+zigduino_r1.bootloader.lock_bits=0x0F
 
-zigduino.build.mcu=atmega128rfa1
-zigduino.build.f_cpu=16000000L
-zigduino.build.core=zigduino
-zigduino.build.variant=zigduino_r1
+zigduino_r1.build.mcu=atmega128rfa1
+zigduino_r1.build.f_cpu=16000000L
+zigduino_r1.build.core=zigduino
+zigduino_r1.build.variant=zigduino_r1
 
 ##############################################################
 
@@ -493,4 +493,3 @@ zigduino_r2.build.mcu=atmega128rfa1
 zigduino_r2.build.f_cpu=16000000L
 zigduino_r2.build.core=zigduino
 zigduino_r2.build.variant=zigduino_r2
-
