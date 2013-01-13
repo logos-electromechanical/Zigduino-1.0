@@ -20,6 +20,7 @@ extern "C"{
 
 #define INPUT 0x0
 #define OUTPUT 0x1
+#define INPUT_PULLUP 0x2
 
 #define true 0x1
 #define false 0x0
@@ -68,8 +69,8 @@ extern "C"{
 #define noInterrupts() cli()
 
 #define clockCyclesPerMicrosecond() ( F_CPU / 1000000L )
-#define clockCyclesToMicroseconds(a) ( ((a) * 1000L) / (F_CPU / 1000L) )
-#define microsecondsToClockCycles(a) ( ((a) * (F_CPU / 1000L)) / 1000L )
+#define clockCyclesToMicroseconds(a) ( (a) / clockCyclesPerMicrosecond() )
+#define microsecondsToClockCycles(a) ( (a) * clockCyclesPerMicrosecond() )
 
 #define lowByte(w) ((uint8_t) ((w) & 0xff))
 #define highByte(w) ((uint8_t) ((w) >> 8))
@@ -143,6 +144,7 @@ extern const uint8_t PROGMEM digital_pin_to_timer_PGM[];
 #define NOT_A_PIN 0
 #define NOT_A_PORT 0
 
+#ifdef ARDUINO_MAIN
 #define PA 1
 #define PB 2
 #define PC 3
@@ -154,6 +156,7 @@ extern const uint8_t PROGMEM digital_pin_to_timer_PGM[];
 #define PJ 10
 #define PK 11
 #define PL 12
+#endif
 
 #define NOT_ON_TIMER 0
 #define TIMER0A 1
