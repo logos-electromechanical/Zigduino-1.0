@@ -71,11 +71,11 @@ void attachInterrupt(uint8_t interruptNum, void (*userFunc)(void), int mode) {
 			EICRA = (EICRA & ~((1 << ISC10) | (1 << ISC11))) | (mode << ISC10);
 			EIMSK |= (1 << INT1);
 			break;
-		case 6: // INT2 (unconnected on Zigduino r1)
+		case 6: // INT2 (unconnected on Zigduino r1, pin 0 on the Zigduino r2)
 			EICRA = (EICRA & ~((1 << ISC20) | (1 << ISC21))) | (mode << ISC20);
 			EIMSK |= (1 << INT2);
 			break;
-		case 7: // INT3 (unconnected on Zigduino r1)
+		case 7: // INT3 (unconnected on Zigduino r1, pin 1 on the Zigduino r2)
 			EICRA = (EICRA & ~((1 << ISC30) | (1 << ISC31))) | (mode << ISC30);
 			EIMSK |= (1 << INT3);
 			break;
@@ -106,6 +106,12 @@ void detachInterrupt(uint8_t interruptNum) {
 			break;
 		case 5: // INT1 (pin SDA)
 			EIMSK &= ~(1 << INT1);
+			break;
+		case 6: // INT2 (unconnected on Zigduino r1, pin 0 on the Zigduino r2)
+			EIMSK &= ~(1 << INT2);
+			break;
+		case 7: // INT3 (unconnected on Zigduino r1, pin 1 on the Zigduino r2)
+			EIMSK &= ~(1 << INT3);
 			break;
     }
       
@@ -142,5 +148,13 @@ SIGNAL(INT0_vect) {
 SIGNAL(INT1_vect) {
   if(intFunc[EXTERNAL_INT_5])
     intFunc[EXTERNAL_INT_5]();
+}
+SIGNAL(INT2_vect) {
+  if(intFunc[EXTERNAL_INT_6])
+    intFunc[EXTERNAL_INT_6]();
+}
+SIGNAL(INT3_vect) {
+  if(intFunc[EXTERNAL_INT_7])
+    intFunc[EXTERNAL_INT_7]();
 }
 
