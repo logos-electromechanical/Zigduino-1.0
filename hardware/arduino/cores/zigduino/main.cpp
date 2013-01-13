@@ -1,4 +1,3 @@
-#define ARDUINO_MAIN
 #include <Arduino.h>
 
 int main(void)
@@ -6,7 +5,7 @@ int main(void)
 	init();
 
 #if defined(USBCON)
-	USB.attach();
+	USBDevice.attach();
 #endif
 	
 	setup();
