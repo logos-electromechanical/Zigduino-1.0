@@ -59,7 +59,7 @@ const static uint8_t A7 = 35;
 
 const static uint8_t RFTX = 23;
 const static uint8_t RFRX = 24;
-const static uint8_t BATMON = 35;
+//const static uint8_t BATMON = 35;
 
 // A majority of the pins are NOT PCINTs, SO BE WARNED (i.e. you cannot use them as receive pins)
 // Only pins available for RECEIVE (TRANSMIT can be on any pin):
@@ -114,7 +114,6 @@ const uint16_t PROGMEM port_to_output_PGM[] = {
 	(uint16_t)&PORTF,
 	(uint16_t)&PORTG,
 	NOT_A_PORT,
-#ifdef ARDUINO_MAIN
 	NOT_A_PORT,
 	NOT_A_PORT,
 	NOT_A_PORT,
