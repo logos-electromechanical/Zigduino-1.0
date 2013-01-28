@@ -79,14 +79,6 @@ struct ring_buffer
   ring_buffer rx_buffer1  =  { { 0 }, 0, 0 };
   ring_buffer tx_buffer1  =  { { 0 }, 0, 0 };
 #endif
-#if defined(UBRR2H)
-  ring_buffer rx_buffer2  =  { { 0 }, 0, 0 };
-  ring_buffer tx_buffer2  =  { { 0 }, 0, 0 };
-#endif
-#if defined(UBRR3H)
-  ring_buffer rx_buffer3  =  { { 0 }, 0, 0 };
-  ring_buffer tx_buffer3  =  { { 0 }, 0, 0 };
-#endif
 
 inline void store_char(unsigned char c, ring_buffer *buffer)
 {
@@ -271,41 +263,6 @@ ISR(USART1_UDRE_vect)
   }
 }
 #endif
-
-#ifdef USART2_UDRE_vect
-ISR(USART2_UDRE_vect)
-{
-  if (tx_buffer2.head == tx_buffer2.tail) {
-	// Buffer empty, so disable interrupts
-    cbi(UCSR2B, UDRIE2);
-  }
-  else {
-    // There is more data in the output buffer. Send the next byte
-    unsigned char c = tx_buffer2.buffer[tx_buffer2.tail];
-    tx_buffer2.tail = (tx_buffer2.tail + 1) % SERIAL_BUFFER_SIZE;
-	
-    UDR2 = c;
-  }
-}
-#endif
-
-#ifdef USART3_UDRE_vect
-ISR(USART3_UDRE_vect)
-{
-  if (tx_buffer3.head == tx_buffer3.tail) {
-	// Buffer empty, so disable interrupts
-    cbi(UCSR3B, UDRIE3);
-  }
-  else {
-    // There is more data in the output buffer. Send the next byte
-    unsigned char c = tx_buffer3.buffer[tx_buffer3.tail];
-    tx_buffer3.tail = (tx_buffer3.tail + 1) % SERIAL_BUFFER_SIZE;
-	
-    UDR3 = c;
-  }
-}
-#endif
-
 
 // Constructors ////////////////////////////////////////////////////////////////
 
