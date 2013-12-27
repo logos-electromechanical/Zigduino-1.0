@@ -172,9 +172,9 @@ const uint8_t PROGMEM digital_pin_to_port_PGM[] = {
 	PG	, // PG 4 ** 30 ** TOSC1 (PIN 8 of AUX)
 	PG	, // PG 1 ** 31 ** PIN 9 of AUX
 	PG	, // PG 2 ** 32 ** PIN 10 of AUX
-	PF	, // PF 6 ** 33 ** A6 (PIN 11 of AUX)
+	PF	, // PF 7 ** 33 ** A7 (PIN 11 of AUX)
 	PG	, // PG 0 ** 34 ** PIN 12 of AUX
-	PF 	, // PF 7 ** 35 ** A7/BATMON (PIN 13 of AUX)
+	PF 	, // PF 6 ** 35 ** A6/BATMON(PIN 13 of AUX)
 	PE	, // PE 0 ** 36 ** USART0_RX
 	PE	, // PE 1 ** 37 ** USART0_TX
 	
@@ -216,9 +216,9 @@ const uint8_t PROGMEM digital_pin_to_bit_mask_PGM[] = {
 	_BV( 4 )	, // PG 4 ** 30 ** TOSC1 (PIN 8 of AUX)
 	_BV( 1 )	, // PG 1 ** 31 ** PIN 9 of AUX
 	_BV( 2 )	, // PG 2 ** 32 ** PIN 10 of AUX
-	_BV( 6 )	, // PF 6 ** 33 ** A6 (PIN 11 of AUX)
+	_BV( 7 )	, // PF 7 ** 33 ** A7 (PIN 11 of AUX)
 	_BV( 0 )	, // PG 0 ** 34 ** PIN 12 of AUX
-	_BV( 7 ) 	, // PF 7 ** 35 ** A7/BATMON (PIN 13 of AUX)
+	_BV( 6 ) 	, // PF 6 ** 35 ** A6/BATMON (PIN 13 of AUX)
 	_BV( 0 )	, // PE 0 ** 36 ** USART0_RX
 	_BV( 1 )	, // PE 1 ** 37 ** USART0_TX
 	
@@ -260,9 +260,9 @@ const uint8_t PROGMEM digital_pin_to_timer_PGM[] = {
 	NOT_ON_TIMER	, // PG 4 ** 30 ** TOSC1 (PIN 8 of AUX)
 	NOT_ON_TIMER	, // PG 1 ** 31 ** PIN 9 of AUX
 	NOT_ON_TIMER	, // PG 2 ** 32 ** PIN 10 of AUX
-	NOT_ON_TIMER	, // PF 6 ** 33 ** A6 (PIN 11 of AUX)
+	NOT_ON_TIMER	, // PF 6 ** 33 ** A7 (PIN 11 of AUX)
 	NOT_ON_TIMER	, // PG 0 ** 34 ** PIN 12 of AUX
-	NOT_ON_TIMER 	, // PF 7 ** 35 ** A7/BATMON (PIN 13 of AUX)
+	NOT_ON_TIMER 	, // PF 7 ** 35 ** A6/BATMON (PIN 13 of AUX)
 	NOT_ON_TIMER	, // PE 0 ** 36 ** USART0_RX
 	NOT_ON_TIMER	, // PE 1 ** 37 ** USART0_TX
 };	
