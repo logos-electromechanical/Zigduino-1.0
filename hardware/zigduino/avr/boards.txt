@@ -6,6 +6,7 @@ menu.cpu=Processor
 
 zigduino_r1.name=Zigduino_r1
 
+zigduino_r2.upload.tool=avrdude
 zigduino_r1.upload.protocol=arduino
 zigduino_r1.upload.maximum_size=126976
 zigduino_r1.upload.speed=57600
@@ -28,6 +29,7 @@ zigduino_r1.build.variant=zigduino_r1
 
 zigduino_r2.name=Zigduino_r2
 
+zigduino_r2.upload.tool=avrdude
 zigduino_r2.upload.protocol=arduino
 zigduino_r2.upload.maximum_size=126976
 zigduino_r2.upload.speed=57600
