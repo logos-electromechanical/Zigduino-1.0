@@ -1,6 +1,5 @@
 /*
-  main.cpp - Main loop for Arduino sketches
-  Copyright (c) 2005-2013 Arduino Team.  All right reserved.
+  Copyright (c) 2012 Arduino.  All right reserved.
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
@@ -9,38 +8,24 @@
 
   This library is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  See the GNU Lesser General Public License for more details.
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#include <Arduino.h>
-
-// Weak empty variant initialization function.
-// May be redefined by variant files.
-void initVariant() __attribute__((weak));
-void initVariant() { }
-
-int main(void)
-{
-	init();
-
-	initVariant();
-
-#if defined(USBCON)
-	USBDevice.attach();
-#endif
-	
-	setup();
-    
-	for (;;) {
-		loop();
-		if (serialEventRun) serialEventRun();
-	}
-        
-	return 0;
+/**
+ * Empty yield() hook.
+ *
+ * This function is intended to be used by library writers to build
+ * libraries or sketches that supports cooperative threads.
+ *
+ * Its defined as a weak symbol and it can be redefined to implement a
+ * real cooperative scheduler.
+ */
+static void __empty() {
+	// Empty
 }
-
+void yield(void) __attribute__ ((weak, alias("__empty")));

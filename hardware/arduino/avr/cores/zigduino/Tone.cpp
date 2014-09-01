@@ -499,8 +499,7 @@ void noTone(uint8_t _pin)
   digitalWrite(_pin, 0);
 }
 
-#if 0
-#if !defined(__AVR_ATmega8__)
+#ifdef USE_TIMER0
 ISR(TIMER0_COMPA_vect)
 {
   if (timer0_toggle_count != 0)
@@ -520,6 +519,7 @@ ISR(TIMER0_COMPA_vect)
 #endif
 
 
+#ifdef USE_TIMER1
 ISR(TIMER1_COMPA_vect)
 {
   if (timer1_toggle_count != 0)
