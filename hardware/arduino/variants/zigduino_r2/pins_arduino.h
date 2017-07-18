@@ -84,7 +84,7 @@ const static uint8_t RFRX = 24;
                                 ( ((p) == 20) ? 2 : \
                                 ( ((p) == 26) ? 0 : \
                                 ( ((p) == 36) ? 0 : \
-                                0 ) ) ) ) ) ) ) ) 
+                                0 ) ) ) ) ) ) ) ) )
 
 #ifdef ARDUINO_MAIN
 
