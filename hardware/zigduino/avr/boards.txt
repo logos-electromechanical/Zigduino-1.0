@@ -6,7 +6,7 @@ menu.cpu=Processor
 
 zigduino_r1.name=Zigduino_r1
 
-zigduino_r2.upload.tool=avrdude
+zigduino_r1.upload.tool=avrdude
 zigduino_r1.upload.protocol=arduino
 zigduino_r1.upload.maximum_size=126976
 zigduino_r1.upload.speed=57600
@@ -21,7 +21,7 @@ zigduino_r1.bootloader.lock_bits=0x0F
 
 zigduino_r1.build.mcu=atmega128rfa1
 zigduino_r1.build.f_cpu=16000000L
-robotMotor.build.board=AVR_ZIGDUINO_R1
+zigduino_r1.build.board=AVR_ZIGDUINO_R1
 zigduino_r1.build.core=zigduino
 zigduino_r1.build.variant=zigduino_r1
 
@@ -44,7 +44,7 @@ zigduino_r2.bootloader.lock_bits=0x0F
 
 zigduino_r2.build.mcu=atmega128rfa1
 zigduino_r2.build.f_cpu=16000000L
-robotMotor.build.board=AVR_ZIGDUINO_R2
+zigduino_r2.build.board=AVR_ZIGDUINO_R2
 zigduino_r2.build.core=zigduino
 zigduino_r2.build.variant=zigduino_r2
 
